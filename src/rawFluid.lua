@@ -17,7 +17,7 @@ local N = 100
 
 local CHAOS_FACTOR = 0.01
 
-local MAX_DENSITY = 5 
+local MAX_DENSITY = 5
 local FADE = 0.2
 
 local ADD_DENSITY = 100
@@ -41,7 +41,7 @@ local function alloc(n, default)
 	default = default or 0
 	local t = {}
 
-	local size = (N+2)^2
+	local size = (n+2)^2
 	for i = 0, size do
 		t[i] = default
 	end
@@ -76,7 +76,7 @@ local d = alloc(N)			--Next
 
 ------------------------------ Algorithm - Helpers ------------------------------
 local function addSource(x, s, dt)
-	local size = (N+2)^2 
+	local size = (N+2)^2
 	for i = 0, size do
 		x[i] = x[i] + s[i] * dt
 	end
@@ -101,14 +101,14 @@ local function diffuse(b, x, x0, diff, dt)
 	for _ = 1, K do
 		for i = 1, N do
 			for j = 1, N do
-				x[IX(i, j)] = (x0[IX(i, j)] + a * 
+				x[IX(i, j)] = (x0[IX(i, j)] + a *
 					(x[IX(i - 1, j)] + x[IX(i + 1,j)] +
 					x[IX(i, j - 1)] + x[IX(i, j + 1)])) /
 					(1 + 4 * a)
 			end
 		end
 		setBounds(b, x)
-	end	
+	end
 end
 
 local function advect(b, d, d0, u, v, dt)
@@ -134,10 +134,10 @@ local function advect(b, d, d0, u, v, dt)
 			local s0 = 1 - s1
 			local t1 = y - j0
 			local t0 = 1 - t1
-				
+
 			--
 			d[IX(i, j)] = s0 * (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
-				s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)])					
+				s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)])
 		end
 	end
 	setBounds(b, d)
@@ -154,11 +154,11 @@ local function project(u, v, p, div)
 	end
 	setBounds(0, div)
 	setBounds(0, p)
-	
+
 	for _ = 1, K do
 		for i = 1, N do
 			for j = 1, N do
-				p[IX(i, j)] = (div[IX(i, j)] + 
+				p[IX(i, j)] = (div[IX(i, j)] +
 					(p[IX(i - 1, j)] + p[IX(i + 1,j)] +
 					p[IX(i, j - 1)] + p[IX(i, j + 1)])) /
 					4
@@ -166,11 +166,11 @@ local function project(u, v, p, div)
 		end
 		setBounds(0, p)
 	end
-	
+
 	for i = 1, N do
 		for j = 1, N do
 			u[IX(i, j)] = u[IX(i, j)] - (0.5 * (p[IX(i + 1, j)] - p[IX(i - 1, j)]) / h)
-			v[IX(i, j)] = v[IX(i, j)] - (0.5 * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h) 
+			v[IX(i, j)] = v[IX(i, j)] - (0.5 * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h)
 		end
 	end
 	setBounds(1, u)
@@ -195,10 +195,10 @@ local function velocityStep(u, v, u0, v0, visc, dt)
 	diffuse(2, v, v0, visc, dt)
 	project(u, v, u0, v0)
 	u0, u = u, u0
-	v0, v = v, v0	
+	v0, v = v, v0
 	advect(1, u, u0, u0, v0, dt)
 	advect(2, v, v0, u0, v0, dt)
-	project(u, v, u0, v0)	
+	project(u, v, u0, v0)
 end
 
 --Extra
@@ -206,14 +206,14 @@ local function fadeDensity(t)
 	local size = (N+2)^2
 	for i = 1, size do
 		t[i] = math.max(0, t[i] - FADE)
-	end 
+	end
 end
 
 local function bindDensity(t)
 	local size = (N+2)^2
 	for i = 1, size do
 		t[i] = math.min(t[i], MAX_DENSITY)
-	end 
+	end
 end
 
 local function removeDensity(x, y, r)
@@ -256,7 +256,7 @@ local function processUserInput()
 		if ev.type == "mousePressed" then
 			local x = math.floor(map(ev.x, 0, love.graphics.getWidth(), 0, N))
 			local y = math.floor(map(ev.y, 0, love.graphics.getHeight(), 0, N))
-			
+
 			if ev.button == 1 and ev.shift then
 				removeDensity(x, y, REMOVE_DENSITY_RADIUS)
 			elseif ev.button == 2 and ev.shift then
@@ -276,32 +276,32 @@ local function processUserInput()
 			end
 		end
 	end
-	
+
 	for k, src in ipairs(sources) do
 		d0[src.index] = d0[src.index] + src.d0
 		if src.u0 then
 			u0[src.index] = u0[src.index] + src.u0
 			v0[src.index] = v0[src.index] + src.v0
-		end	
+		end
 	end
-	
-	
---	if love.mouse.isDown(1) then
---		local mx, my = love.mouse.getPosition()
---		local x = math.floor(map(mx, 0, love.graphics.getWidth(), 0, N))
---		local y = math.floor(map(my, 0, love.graphics.getHeight(), 0, N))
---		d0[IX(x, y)] = d0[IX(x, y)] + ADD_DENSITY
---	end
---	
---	if love.mouse.isDown(2) then
---		local mx, my = love.mouse.getPosition()
---		local x = math.floor(map(mx, 0, love.graphics.getWidth(), 0, N))
---		local y = math.floor(map(my, 0, love.graphics.getHeight(), 0, N))
---		u0[IX(x, y)] = u0[IX(x, y)] + ADD_VEL_X
---		v0[IX(x, y)] = v0[IX(x, y)] + ADD_VEL_Y
---	end
+
+
+	--	if love.mouse.isDown(1) then
+	--		local mx, my = love.mouse.getPosition()
+	--		local x = math.floor(map(mx, 0, love.graphics.getWidth(), 0, N))
+	--		local y = math.floor(map(my, 0, love.graphics.getHeight(), 0, N))
+	--		d0[IX(x, y)] = d0[IX(x, y)] + ADD_DENSITY
+	--	end
+	--
+	--	if love.mouse.isDown(2) then
+	--		local mx, my = love.mouse.getPosition()
+	--		local x = math.floor(map(mx, 0, love.graphics.getWidth(), 0, N))
+	--		local y = math.floor(map(my, 0, love.graphics.getHeight(), 0, N))
+	--		u0[IX(x, y)] = u0[IX(x, y)] + ADD_VEL_X
+	--		v0[IX(x, y)] = v0[IX(x, y)] + ADD_VEL_Y
+	--	end
 end
- 
+
 ------------------------------ Gameplay Loop ------------------------------
 function love.update(dt)
 	dt = DT
@@ -310,8 +310,8 @@ function love.update(dt)
 	velocityStep(u, v, u0, v0, VISCOCITY, dt)
 	densityStep(d, d0, u, v, DIFFUSION, dt)
 	bindDensity(d0)
-	fadeDensity(d0)	
-	
+	fadeDensity(d0)
+
 	local td = 0
 	for i = 1, (N+2)^2 do
 		td = td + d0[i]
@@ -323,14 +323,14 @@ function love.draw()
 	local g2d = love.graphics
 	local scale = love.graphics.getWidth() / N
 	g2d.push('all')
-		g2d.scale(scale)
-		for i = 1, N do
-			for j = 1, N do
-				local brightness = d0[IX(i, j)]
-				g2d.setColor(0, 0, brightness, 1)
-				g2d.rectangle('fill', i, j, 1, 1)
-			end
+	g2d.scale(scale)
+	for i = 1, N do
+		for j = 1, N do
+			local brightness = d0[IX(i, j)]
+			g2d.setColor(0, 0, brightness, 1)
+			g2d.rectangle('fill', i, j, 1, 1)
 		end
+	end
 	g2d.pop()
 end
 
