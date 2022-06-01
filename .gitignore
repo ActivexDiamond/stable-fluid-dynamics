@@ -1,4 +1,7 @@
 ## General that I use in most of my projects.
+# Temporary fix for love-packager
+config.lua
+
 # Temporary Files
 *~
 .*.swp
