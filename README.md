@@ -19,5 +19,6 @@ The paper (online): https://www.dgp.toronto.edu/public_user/stam/reality/Researc
 
 Special thanks to Gonkee's video for introducing me to this concept and paper.
 "But how do fluid simulations work?" https://www.youtube.com/watch?v=qsYE1wMEMPA
+
 Gonkee's channel: https://www.youtube.com/channel/UCG2IoSJBUhrGL8fb5stMCWw
 
