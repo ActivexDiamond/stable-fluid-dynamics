@@ -1,6 +1,6 @@
 name: fluid-dynamics
 description: A Lua/Love implementation of Jos Stam's stable fluid-dynamics paper. https://www.dgp.toronto.edu/public_user/stam/reality/Research/pdf/GDC03.pdf
-version: 1.0.0
+version: 1.1.0
 
 output: releases
 
@@ -9,6 +9,7 @@ icon: icon.png
 
 assets:
     - "src/**/*"
+    - "tests/**/*"
 
 targets:
     - love
