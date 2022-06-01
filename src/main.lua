@@ -5,10 +5,15 @@ local N = 100
 
 local CHAOS_FACTOR = 0.01
 
-local FADE = 0
+local MAX_DENSITY = 5 
+local FADE = 0.2
+
 local ADD_DENSITY = 100
-local ADD_VEL_X = 10
-local ADD_VEL_Y = 10
+local ADD_VELOCITY_X = 10
+local ADD_VELOCITY_Y = 10
+
+local REMOVE_DENSITY_RADIUS = 10
+local REMOVE_VELOCITY_RADIUS = 10
 
 local DT = 0.1
 local DIFFUSION = 0.001
@@ -185,11 +190,35 @@ local function velocityStep(u, v, u0, v0, visc, dt)
 end
 
 --Extra
-local function fadeDensity()
+local function fadeDensity(t)
 	local size = (N+2)^2
 	for i = 1, size do
-		d0[i] = math.max(0, d0[i] - FADE)
+		t[i] = math.max(0, t[i] - FADE)
 	end 
+end
+
+local function bindDensity(t)
+	local size = (N+2)^2
+	for i = 1, size do
+		t[i] = math.min(t[i], MAX_DENSITY)
+	end 
+end
+
+local function removeDensity(x, y, r)
+	for i = x - r, x + r do
+		for j = y - r, y + r do
+			d[IX(i, j)] = 0
+		end
+	end
+end
+
+local function removeVelocity(x, y, r)
+	for i = x - r, x + r do
+		for j = y - r, y + r do
+			u[IX(i, j)] = 0
+			v[IX(i, j)] = 0
+		end
+	end
 end
 
 --Interactivity
@@ -200,6 +229,7 @@ function love.mousepressed(x, y, button)
 		x = x,
 		y = y,
 		button = button,
+		shift = love.keyboard.isDown("lshift"),
 	})
 end
 
@@ -215,7 +245,11 @@ local function processUserInput()
 			local x = math.floor(map(ev.x, 0, love.graphics.getWidth(), 0, N))
 			local y = math.floor(map(ev.y, 0, love.graphics.getHeight(), 0, N))
 			
-			if ev.button == 1 then
+			if ev.button == 1 and ev.shift then
+				removeDensity(x, y, REMOVE_DENSITY_RADIUS)
+			elseif ev.button == 2 and ev.shift then
+				removeVelocity(x, y, REMOVE_VELOCITY_RADIUS)
+			elseif ev.button == 1 then
 				table.insert(sources, {
 					index = IX(x, y),
 					d0 = ADD_DENSITY,
@@ -224,8 +258,8 @@ local function processUserInput()
 				table.insert(sources, {
 					index = IX(x, y),
 					d0 = ADD_DENSITY,
-					u0 = math.random(0, ADD_VEL_X),
-					v0 = math.random(0, ADD_VEL_Y),
+					u0 = math.random(0, ADD_VELOCITY_X),
+					v0 = math.random(0, ADD_VELOCITY_Y),
 				})
 			end
 		end
@@ -263,7 +297,8 @@ function love.update(dt)
 	processUserInput()
 	velocityStep(u, v, u0, v0, VISCOCITY, dt)
 	densityStep(d, d0, u, v, DIFFUSION, dt)
-	--fadeDensity()
+	bindDensity(d0)
+	fadeDensity(d0)	
 	
 	local td = 0
 	for i = 1, (N+2)^2 do
