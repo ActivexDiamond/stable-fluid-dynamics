@@ -2,4 +2,5 @@
 <buildpath>
 	<buildpathentry kind="con" path="org.eclipse.ldt.ExecutionEnvironmentContainer/LOVE2D/0.11.1"/>
 	<buildpathentry kind="src" path="src"/>
+	<buildpathentry kind="src" path="tests"/>
 </buildpath>
