@@ -9,7 +9,7 @@ Can be run as a stand-alone sandbox to explore the concept or used as a Lua libr
 
 ## Controls
 - LMB -> Add static density source.
-- RMB -> Add density source with a random velocity.
+- RMB -> Add static density source with a random velocity.
 - LMB + Shift -> Remove density.
 - RMB + Shift -> Remove velocity.
 
