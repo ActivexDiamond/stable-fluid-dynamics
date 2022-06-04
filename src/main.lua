@@ -34,4 +34,10 @@ function love.mousepressed(x, y, button)
 		},
 	})
 end
+
+function love.keypressed(key, scancode)
+	if key == 'escape' then
+		love.event.quit()
+	end
+end
 --]]

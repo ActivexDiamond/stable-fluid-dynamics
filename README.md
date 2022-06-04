@@ -19,7 +19,7 @@ Note: Currently, once a source is added there is no way to remove or modify it. 
 A pure-Lua implementation of Jos Stam's 2003 paper ["Real-Time Fluid Dynamics for Games"](https://www.dgp.toronto.edu/public_user/stam/reality/Research/pdf/GDC03.pdf)
 
 
-*The link above directs to a freely accessible online pdf of his pdf.*
+*The link above directs to a freely accessible online pdf of his paper.*
 
 Special thanks to Gonkee's ([YouTube channel](https://www.youtube.com/channel/UCG2IoSJBUhrGL8fb5stMCWw)) video --- ["But How Do Fluid Simulations Work?"](https://www.youtube.com/watch?v=qsYE1wMEMPA) --- for introducing me to this concept and paper.
 
